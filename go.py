@@ -14,6 +14,22 @@ from googleapiclient.errors import HttpError
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
+def _filter_events_with_attendees(events):
+  return list(filter(lambda event:len(event['attendees'] if 'attendees' in event else []) > 0, events))
+
+def _filter_non_recurring_events(events):
+  return list(filter(lambda event:'recurringEventId' in event, events))
+
+def _print_event(event):
+  attendees = event['attendees'] if 'attendees' in event else "none"
+
+  event_id = event['id']
+  etag = event['etag']
+  start = event['start'].get('dateTime', event['start'].get('date'))
+  summary = event['summary']
+  
+  print (start, event_id, summary, attendees)
+
 def main():
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
@@ -43,7 +59,7 @@ def main():
         now = '2021-01-01T00:00:00Z'
         print('Getting the upcoming 10 events')
         events_result = service.events().list(calendarId='primary', timeMin=now,
-                                              maxResults=4000, singleEvents=True,
+                                              maxResults=5000, singleEvents=True,
                                               orderBy='startTime').execute()
         events = events_result.get('items', [])
 
@@ -51,18 +67,11 @@ def main():
             print('No upcoming events found.')
             return
 
-        # Prints the start and name of the next 10 events
-        for event in events:
-            etag = event['etag']
-            attendees = event['attendees'] if 'attendees' in event else []
-            start = event['start'].get('dateTime', event['start'].get('date'))
-            summary = event['summary']
+        filtered_events = _filter_events_with_attendees(events)
+        # filtered_events = _filter_non_recurring_events(events)
 
-            if len(attendees) == 0:
-              print (start, etag, summary, "none")
-              continue
-
-            print (start, etag, summary, attendees)
+        for event in filtered_events:
+            _print_event(event)
 
     except HttpError as error:
         print('An error occurred: %s' % error)
