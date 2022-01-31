@@ -20,15 +20,19 @@ def _filter_events_with_attendees(events):
 def _filter_non_recurring_events(events):
   return list(filter(lambda event:'recurringEventId' in event, events))
 
+def _filter_duplicate_events(events):
+  return list(filter(lambda event:event['id'].startswith('1854280e-'), events))
+
 def _print_event(event):
   attendees = event['attendees'] if 'attendees' in event else "none"
 
+  created = event['created']
   event_id = event['id']
   etag = event['etag']
   start = event['start'].get('dateTime', event['start'].get('date'))
   summary = event['summary']
   
-  print (start, event_id, summary, attendees)
+  print (start, created, event_id, summary, attendees)
 
 def main():
     """Shows basic usage of the Google Calendar API.
@@ -67,8 +71,9 @@ def main():
             print('No upcoming events found.')
             return
 
-        filtered_events = _filter_events_with_attendees(events)
+        # filtered_events = _filter_events_with_attendees(events)
         # filtered_events = _filter_non_recurring_events(events)
+        filtered_events = _filter_duplicate_events(events)
 
         for event in filtered_events:
             _print_event(event)
