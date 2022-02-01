@@ -99,6 +99,7 @@ def main():
 
     # Call the Calendar API
     start_date = '2015-01-01T00:00:00Z'
+    start_date = '1900-01-01T00:00:00Z'
 
     events = _rec_get_calendar_events_for_page(service, start_date)
 
