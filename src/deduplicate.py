@@ -61,6 +61,7 @@ def _event_to_string(event):
   return f"start={start}, created={created}, event_id={event_id}, description={description}"
 
 
+# Courtesy https://github.com/googleworkspace/python-samples/blob/797d879e0a5d05d17f22608dd8c9d441019ea8e0/calendar/quickstart/quickstart.py#L35
 def _build_service():
   creds = None
   # The file token.json stores the user's access and refresh tokens, and is
